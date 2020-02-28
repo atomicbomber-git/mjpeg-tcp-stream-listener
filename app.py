@@ -33,6 +33,8 @@ connection = None
 
 
 image_data = open("ssd.png", "rb").read()
+image_data_lock = threading.Lock()
+
 
 class DisconnectedError(Exception):
     pass
@@ -59,7 +61,7 @@ def eat_message(connection, expected_message_length):
 
     return message_buffer
 
-def listen_to_stream():
+def update_image():
     global connection, must_reconnect, message_length_digits, current_interpret_mode, image_data, image_message_len
 
     while True:
@@ -94,15 +96,14 @@ def listen_to_stream():
 
             elif current_interpret_mode == MODE_IMAGE:
                 image_data = eat_message(connection, image_message_len)
-
-                print("IMAGE_DETECTED")
                 current_interpret_mode = MODE_SEEK_MARKER
             else:
                 raise Exception("INVALID_STATE, mode {} is unknown.", current_interpret_mode)
         except (IOError, DisconnectedError):
             must_reconnect = True
 
-stream_thread = threading.Thread(target=listen_to_stream)
+stream_thread = threading.Thread(target=update_image)
+stream_thread.daemon = True
 stream_thread.start()
 
 @app.route('/')
@@ -120,5 +121,5 @@ def to_frame(binary_data):
 
 def gen():
     while True:
-        print(image_data)
-        yield to_frame(image_data)
+        image = image_data
+        yield to_frame(image)
