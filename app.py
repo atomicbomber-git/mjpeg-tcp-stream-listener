@@ -1,6 +1,6 @@
 import threading
 
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from stream.listener import TCPStreamImageListener
 from dotenv import load_dotenv
 import waitress
@@ -39,6 +39,10 @@ stream_thread.start()
 @app.route('/')
 def video_feed():
     return Response(gen_image_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/video')
+def video_page():
+    return render_template("video_page.jinja2")
 
 def to_frame(binary_data):
     return (b'--frame\r\n'
