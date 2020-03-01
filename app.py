@@ -32,12 +32,6 @@ def listen_to_updates():
         on_image_update=on_image_update
     ).listen()
 
-
-stream_thread = threading.Thread(target=listen_to_updates)
-stream_thread.setDaemon(True)
-stream_thread.start()
-
-
 @app.route('/')
 def video_feed():
     return Response(gen_image_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -65,6 +59,10 @@ if __name__ == '__main__':
         host=os.getenv("SERVE_HOST"),
         port=os.getenv("SERVE_PORT")
     )
+
+    stream_thread = threading.Thread(target=listen_to_updates)
+    stream_thread.setDaemon(True)
+    stream_thread.start()
 
 # waitress.serve(
 #     app,
