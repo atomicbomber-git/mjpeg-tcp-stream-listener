@@ -33,9 +33,9 @@ def listen_to_updates():
     ).listen()
 
 
-stream_thread = threading.Thread(target=listen_to_updates)
-stream_thread.setDaemon(True)
-stream_thread.start()
+# stream_thread = threading.Thread(target=listen_to_updates)
+# stream_thread.setDaemon(True)
+# stream_thread.start()
 
 
 @app.route('/')
@@ -53,12 +53,27 @@ def to_frame(binary_data):
             b'Content-Type: image/jpeg\r\n\r\n' + binary_data + b'\r\n')
 
 
+from PIL import Image, ImageDraw
+import io
+import random, string
+
+
 def gen_image_frame():
     global image_data
 
-    while True:
-        yield to_frame(image_data)
+    def rand_num():
+        return "".join(
+            [random.choice(string.digits) for _ in range(0, 20)]
+        )
 
+    while True:
+        image = Image.new('RGB', (640, 480), color=(0, 0, 0))
+        draft = ImageDraw.Draw(image)
+        draft.text((24, 24), rand_num(), fill=(255, 255, 255), stroke_width=10)
+        image_bytes = io.BytesIO()
+        image.save(image_bytes, format='JPEG')
+
+        yield to_frame(image_bytes.getvalue())
 
 waitress.serve(
     app,
