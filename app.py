@@ -53,9 +53,10 @@ def to_frame(binary_data):
 
 
 def gen_image_frame():
+    global image_data
+
     while True:
-        image = image_data
-        yield to_frame(image)
+        yield to_frame(image_data)
 
 
 waitress.serve(
