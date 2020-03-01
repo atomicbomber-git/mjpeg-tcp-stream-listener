@@ -15,16 +15,16 @@ load_dotenv()
 app = Flask(__name__)
 
 image_data = open(SOURCE_DISCONNECTED_IMAGE, "rb").read()
+image_last_update_time = None
 
 
 def listen_to_updates():
-    global image_data
+    global image_data, image_last_update_time
 
     def on_image_update(new_image_data):
-        global image_data
+        global image_data, image_last_update_time
         image_data = new_image_data
-        print("Image updated at {}".format(datetime.now()))
-
+        image_last_update_time = datetime.now()
     TCPStreamImageListener(
         listen_host=os.getenv("LISTEN_HOST"),
         listen_port=int(os.getenv("LISTEN_PORT")),
@@ -56,6 +56,7 @@ def gen_image_frame():
     global image_data
 
     while True:
+        print(image_last_update_time)
         yield to_frame(image_data)
 
 
