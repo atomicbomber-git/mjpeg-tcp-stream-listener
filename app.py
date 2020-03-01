@@ -12,6 +12,8 @@ SOURCE_DISCONNECTED_IMAGE = "stream_source_disconnected.png"
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
 
+app = Flask(__name__)
+
 image_data = open(SOURCE_DISCONNECTED_IMAGE, "rb").read()
 image_last_update_time = None
 
@@ -31,7 +33,9 @@ def listen_to_updates():
     ).listen()
 
 
-app = Flask(__name__)
+stream_thread = threading.Thread(target=listen_to_updates)
+stream_thread.setDaemon(True)
+stream_thread.start()
 
 
 @app.route('/')
@@ -56,18 +60,8 @@ def gen_image_frame():
         yield to_frame(image_data)
 
 
-if __name__ == '__main__':
-    stream_thread = threading.Thread(target=listen_to_updates)
-    stream_thread.setDaemon(True)
-    stream_thread.start()
-
-    app.run(
-        host=os.getenv("SERVE_HOST"),
-        port=os.getenv("SERVE_PORT")
-    )
-
-# waitress.serve(
-#     app,
-#     host=os.getenv("SERVE_HOST"),
-#     port=os.getenv("SERVE_PORT")
-# )
+waitress.serve(
+    app,
+    host=os.getenv("SERVE_HOST"),
+    port=os.getenv("SERVE_PORT")
+)
