@@ -3,6 +3,7 @@ import threading
 from flask import Flask, Response, render_template
 from stream.listener import TCPStreamImageListener
 from dotenv import load_dotenv
+from datetime import datetime
 import waitress
 import os
 
@@ -10,7 +11,6 @@ SOURCE_DISCONNECTED_IMAGE = "stream_source_disconnected.png"
 
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
-
 
 app = Flask(__name__)
 
@@ -23,6 +23,7 @@ def listen_to_updates():
     def on_image_update(new_image_data):
         global image_data
         image_data = new_image_data
+        print("Image updated at {}".format(datetime.now()))
 
     TCPStreamImageListener(
         listen_host=os.getenv("LISTEN_HOST"),
@@ -40,9 +41,11 @@ stream_thread.start()
 def video_feed():
     return Response(gen_image_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/video')
 def video_page():
     return render_template("video_page.jinja2")
+
 
 def to_frame(binary_data):
     return (b'--frame\r\n'
@@ -60,4 +63,3 @@ waitress.serve(
     host=os.getenv("SERVE_HOST"),
     port=os.getenv("SERVE_PORT")
 )
-
