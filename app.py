@@ -9,6 +9,11 @@ import os
 import os.path as path
 
 SOURCE_DISCONNECTED_IMAGE = os.path.realpath("./stream_source_disconnected.png")
+DEFAULT_SERVE_HOST = "0.0.0.0"
+DEFAULT_SERVE_PORT = 9000
+
+DEFAULT_LISTEN_HOST = "0.0.0.0"
+DEFAULT_SERVE_PORT = 8000
 
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
@@ -28,8 +33,8 @@ def listen_to_updates():
         image_last_update_time = datetime.now()
 
     TCPStreamImageListener(
-        listen_host=os.getenv("LISTEN_HOST", "0.0.0.0"),
-        listen_port=int(os.getenv("LISTEN_PORT", "8000")),
+        listen_host=os.getenv("LISTEN_HOST", DEFAULT_SERVE_HOST),
+        listen_port=int(os.getenv("LISTEN_PORT", DEFAULT_SERVE_PORT)),
         on_image_update=on_image_update
     ).listen()
 
@@ -78,6 +83,6 @@ def gen_image_frame():
 
 waitress.serve(
     app,
-    host=os.getenv("SERVE_HOST", "0.0.0.0"),
-    port=os.getenv("SERVE_PORT", "9000")
+    host=os.getenv("SERVE_HOST", DEFAULT_LISTEN_HOST),
+    port=os.getenv("SERVE_PORT", DEFAULT_SERVE_PORT)
 )
