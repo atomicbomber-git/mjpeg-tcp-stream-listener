@@ -8,7 +8,9 @@ import waitress
 import os
 import os.path as path
 
-SOURCE_DISCONNECTED_IMAGE = os.path.realpath("./stream_source_disconnected.png")
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SOURCE_DISCONNECTED_IMAGE = os.path.join(SCRIPT_DIR, "stream_source_disconnected.png")
+
 DEFAULT_SERVE_HOST = "0.0.0.0"
 DEFAULT_SERVE_PORT = 9000
 
