@@ -27,8 +27,8 @@ def listen_to_updates():
         image_last_update_time = datetime.now()
 
     TCPStreamImageListener(
-        listen_host=os.getenv("LISTEN_HOST"),
-        listen_port=int(os.getenv("LISTEN_PORT")),
+        listen_host=os.getenv("LISTEN_HOST", "0.0.0.0"),
+        listen_port=int(os.getenv("LISTEN_PORT", "8000")),
         on_image_update=on_image_update
     ).listen()
 
@@ -77,6 +77,6 @@ def gen_image_frame():
 
 waitress.serve(
     app,
-    host=os.getenv("SERVE_HOST"),
-    port=os.getenv("SERVE_PORT")
+    host=os.getenv("SERVE_HOST", "0.0.0.0"),
+    port=os.getenv("SERVE_PORT", "9000")
 )
