@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 from datetime import datetime
 import waitress
 import os
+import os.path as path
 
-SOURCE_DISCONNECTED_IMAGE = "stream_source_disconnected.png"
+SOURCE_DISCONNECTED_IMAGE = os.path.realpath(stream_source_disconnected.png)
 
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
