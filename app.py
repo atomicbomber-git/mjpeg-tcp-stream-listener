@@ -15,7 +15,7 @@ DEFAULT_SERVE_HOST = "0.0.0.0"
 DEFAULT_SERVE_PORT = 9000
 
 DEFAULT_LISTEN_HOST = "0.0.0.0"
-DEFAULT_SERVE_PORT = 8000
+DEFAULT_LISTEN_PORT = 8000
 
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
@@ -86,5 +86,5 @@ def gen_image_frame():
 waitress.serve(
     app,
     host=os.getenv("SERVE_HOST", DEFAULT_LISTEN_HOST),
-    port=os.getenv("SERVE_PORT", DEFAULT_SERVE_PORT)
+    port=os.getenv("SERVE_PORT", DEFAULT_LISTEN_PORT)
 )
