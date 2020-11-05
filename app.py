@@ -29,21 +29,26 @@ image_last_update_time = None
 def listen_to_updates():
     global image_data, image_last_update_time
 
+    listen_host = os.getenv("LISTEN_HOST", DEFAULT_SERVE_HOST)
+    listen_port = int(os.getenv("LISTEN_PORT", DEFAULT_SERVE_PORT))
+
+    print("Listening to incoming connection from {}:{}".format(listen_host, listen_port))
+
     def on_image_update(new_image_data):
         global image_data, image_last_update_time
         image_data = new_image_data
         image_last_update_time = datetime.now()
 
     TCPStreamImageListener(
-        listen_host=os.getenv("LISTEN_HOST", DEFAULT_SERVE_HOST),
-        listen_port=int(os.getenv("LISTEN_PORT", DEFAULT_SERVE_PORT)),
+        listen_host=listen_host,
+        listen_port=listen_port,
         on_image_update=on_image_update
     ).listen()
 
 
-# stream_thread = threading.Thread(target=listen_to_updates)
-# stream_thread.setDaemon(True)
-# stream_thread.start()
+stream_thread = threading.Thread(target=listen_to_updates)
+stream_thread.setDaemon(True)
+stream_thread.start()
 
 
 @app.route('/')
@@ -81,7 +86,7 @@ def gen_image_frame():
         image_bytes = io.BytesIO()
         image.save(image_bytes, format='JPEG')
 
-        yield to_frame(image_bytes.getvalue())
+        yield to_frame(image_data)
 
 waitress.serve(
     app,

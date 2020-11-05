@@ -1,5 +1,6 @@
 import socket
 from typing import Callable, ClassVar
+import threading, time
 
 MAX_TOLERATED_EMPTY_MESSAGES = 100
 DATA_DELIMITER_SYMBOL = b':::'
@@ -88,8 +89,8 @@ class TCPStreamImageListener:
                     while len(buffer) < len(DATA_DELIMITER_SYMBOL):
                         buffer += self.eat_message(expected_message_length=1)
 
-                    if buffer == DATA_DELIMITER_SYMBOL:
-                        self.current_interpret_mode = MODE_MESSAGE_LEN
+                        if buffer == DATA_DELIMITER_SYMBOL:
+                            self.current_interpret_mode = MODE_MESSAGE_LEN                        
 
                 elif self.current_interpret_mode == MODE_IMAGE:
 
