@@ -7,7 +7,7 @@ DATA_DELIMITER_SYMBOL = b':::'
 MODE_MESSAGE_LEN = 'INTERPRET_MESSAGE_LEN'
 MODE_IMAGE = 'INTERPRET_IMAGE'
 MODE_SEEK_MARKER = 'INTERPRET_SEEK_MARKER'
-
+MODE_SEND_COMMAND = 'MODE_SEND_COMMAND'
 
 class DisconnectedError(Exception):
     pass
@@ -28,7 +28,7 @@ class TCPStreamImageListener:
         self.listen_port = listen_port
 
         self.on_image_update: ClassVar[Callable] = on_image_update
-        self.current_interpret_mode = MODE_SEEK_MARKER
+        self.current_interpret_mode = MODE_SEND_COMMAND
         self.message_length_digits = b''
         self.image_message_len = -1
 
@@ -65,9 +65,22 @@ class TCPStreamImageListener:
         while True:
             try:
                 if self.must_reconnect:
-                    self.connection, _ = self.socket.accept()
-                    self.must_reconnect = False
+                    print("Trying to connect...")
+                    while True:
+                        try:
+                            self.connection, _ = self.socket.accept()
+                            self.must_reconnect = False
+                            print("Connected!")
+                            break
+                        except:
+                            pass
 
+                print(self.current_interpret_mode)
+
+                if self.current_interpret_mode == MODE_SEND_COMMAND:
+                    print("Sending command!")
+                    self.connection.send('r'.encode())
+                    self.current_interpret_mode = MODE_SEEK_MARKER
                 if self.current_interpret_mode == MODE_MESSAGE_LEN:
                     message = self.eat_message(expected_message_length=1)
 
@@ -98,8 +111,9 @@ class TCPStreamImageListener:
                         self.eat_message(expected_message_length=self.image_message_len)
                     )
 
-                    self.current_interpret_mode = MODE_SEEK_MARKER
+                    self.current_interpret_mode = MODE_SEND_COMMAND
                 else:
                     raise Exception("INVALID_STATE, mode {} is unknown.", self.current_interpret_mode)
             except (IOError, DisconnectedError):
+                print("Disconnected.")
                 self.must_reconnect = True
