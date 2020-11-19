@@ -70,6 +70,7 @@ class TCPStreamImageListener:
                         try:
                             self.connection, _ = self.socket.accept()
                             self.must_reconnect = False
+                            self.current_interpret_mode = MODE_SEND_COMMAND
                             print("Connected!")
                             break
                         except:
