@@ -1,0 +1,9 @@
+[program:<PROJECT_NAME>]
+command=<PROJECT_PATH>/start.sh
+directory=/srv
+autostart=true
+autorestart=true
+startretries=3
+stderr_logfile=/var/log/<PROJECT_NAME>/error.log
+stdout_logfile=/var/log/<PROJECT_NAME>/out.log
+user=www-data
