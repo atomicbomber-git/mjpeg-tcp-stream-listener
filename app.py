@@ -7,6 +7,8 @@ from datetime import datetime
 import waitress
 import os
 import os.path as path
+import signal
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 SOURCE_DISCONNECTED_IMAGE = os.path.join(SCRIPT_DIR, "stream_source_disconnected.png")
@@ -20,6 +22,7 @@ DEFAULT_LISTEN_PORT = 8000
 # Initialize environment variables from ./.env file. Example can be found at ./.env.example
 load_dotenv()
 
+
 app = Flask(__name__)
 
 image_data = open(SOURCE_DISCONNECTED_IMAGE, "rb").read()
@@ -27,7 +30,6 @@ image_last_update_time = None
 
 listen_host = os.getenv("LISTEN_HOST", DEFAULT_SERVE_HOST)
 listen_port = int(os.getenv("LISTEN_PORT", DEFAULT_SERVE_PORT))
-
 
 def listen_to_updates():
     global image_data, image_last_update_time, listen_host, listen_port
@@ -75,3 +77,7 @@ waitress.serve(
     host=os.getenv("SERVE_HOST", DEFAULT_LISTEN_HOST),
     port=os.getenv("SERVE_PORT", DEFAULT_LISTEN_PORT)
 )
+
+
+
+exit(0)
